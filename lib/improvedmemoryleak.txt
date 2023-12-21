@@ -1,0 +1,84 @@
+import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
+
+class MemoryLeakObject {
+  final String text;
+
+  MemoryLeakObject(this.text);
+}
+
+List<MemoryLeakObject> leakObjects = [];
+
+class MemoryLeaksScreen extends StatefulWidget {
+  @override
+  _MemoryLeaksScreenState createState() => _MemoryLeaksScreenState();
+}
+
+class _MemoryLeaksScreenState extends State<MemoryLeaksScreen> {
+  // Batasan jumlah objek yang akan disimpan di memori
+  static const int maxObjects = 100;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() {
+    while (leakObjects.length < maxObjects) {
+      leakObjects.add(
+        MemoryLeakObject('Count: ${leakObjects.length}'),
+      );
+    }
+  }
+
+  void _handleInfluxData() {
+    // Simulasikan pemrosesan data masuk
+    // ...
+
+    // Cek apakah jumlah objek melebihi batas
+    if (leakObjects.length > maxObjects) {
+      // Membersihkan beberapa objek tertua
+      int objectsToRemove = leakObjects.length - maxObjects;
+      leakObjects.removeRange(0, objectsToRemove);
+
+      // Pemanggilan garbage collection secara manual
+      developer.gc();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Memory Leak Simulation'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Back (Keep Memory Leak)'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                _handleInfluxData();
+                // Memberikan notifikasi setelah kembali dan membersihkan memory leak
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Back and Cleared Memory Leak.'),
+                  ),
+                );
+              },
+              child: Text('Back and Clear Memory Leak'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

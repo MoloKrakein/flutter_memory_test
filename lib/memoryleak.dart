@@ -14,12 +14,11 @@ class MemoryLeaksScreen extends StatefulWidget {
 }
 
 class _MemoryLeaksScreenState extends State<MemoryLeaksScreen> {
-  // @override
-  // void dispose() {
-  //   // hapus Semua memory leak
-  //   leakObjects.clear();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    leakObjects.clear();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
